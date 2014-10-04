@@ -16,16 +16,52 @@ class OregonStateFile < ActiveRecord::Base
     end
   end
 
-  def downloaded_file_url
-    case downloaded_file.options[:storage]
-      when :filesystem
-        URI 'file://', downloaded_file.path
-      when :s3
-        URI downloaded_file.url
+  def convert_to_csv
+    file = Tempfile.new(['xls2csv-', '.csv'])
+    begin
+      file.write(open(source_xls_file_uripath) {|f| f.read })
+      file.rewind
+
+      xls2csv = File.expand_path Rails.application.secrets.xls2csv
+      data = `#{xls2csv} #{file.path}`
+
+      uri = URI.parse(source_xls_file.url)
+      filename = File.basename(uri.path)
+
+      csv = StringIO.new(data)
+      csv.class.class_eval { attr_accessor :original_filename, :content_type } #add attr's that paperclip needs
+      csv.original_filename = "#{filename}.csv"
+      csv.content_type = "text/plain"
+      
+      self.converted_csv_file = csv
+      self.converted_at = DateTime.now
+    ensure
+      file.close
+      file.unlink
     end
+  end
+  
+  def source_xls_file_uripath
+    uri_path source_xls_file
+  end
+
+  def converted_csv_file_uripath
+    uri_path converted_csv_file
   end
 
 private
+  def uri_path attachment
+    return nil unless attachment.exists?
+    case attachment.options[:storage]
+    when :filesystem
+      attachment.path
+    when :s3
+      attachment.url(:original, timestamp: false)
+    else
+      raise 'unsupported paperclip storage'
+    end
+  end
+
   def set_agent
     @agent = Mechanize.new
     @agent.user_agent_alias = 'Mac Safari'#'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36' # Wikipedia blocks "mechanize"
