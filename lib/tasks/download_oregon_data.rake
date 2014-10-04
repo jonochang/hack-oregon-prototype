@@ -22,5 +22,20 @@ namespace :data do
       f.save!
     end
   end
+
+  desc 'Process Candidate Transactions (download, covert, import) eg., process_transactions[2014-10-01,2014-10-03]'
+  task :process_transactions_for, [:from, :to] => :environment do |t, args|
+    (Date.parse(args[:from])..Date.parse(args[:to])).each do |date|
+      puts "RAKE :: Downloading Oregon State Transactions for #{date}"
+      f = OregonStateFile.new data_type: :transactions, query: {from_date: date, to_date: date}
+      f.download
+      f.save!
+      puts "RAKE :: Converting Oregon State Transactions for #{date}"
+      f.convert_to_csv
+      f.save!
+      puts "RAKE :: Importing Oregon State Transactions for #{date}"
+      f.import!
+    end
+  end
 end
 
