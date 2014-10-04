@@ -1,6 +1,12 @@
+require 'csv'
 class OregonStateFile < ActiveRecord::Base
-  has_attached_file :downloaded_file
-  validates_attachment_content_type :downloaded_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
+  has_many :oregon_state_file
+
+  has_attached_file :source_xls_file
+  validates_attachment_content_type :source_xls_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
+
+  has_attached_file :converted_csv_file
+  validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain']
 
   enum data_type: [:transactions]
 
