@@ -1,6 +1,6 @@
 require 'csv'
 class OregonStateFile < ActiveRecord::Base
-  has_many :oregon_state_file
+  has_many :candidate_transactions
 
   has_attached_file :source_xls_file
   validates_attachment_content_type :source_xls_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
