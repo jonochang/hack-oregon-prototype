@@ -41,8 +41,10 @@ class OregonStateFile < ActiveRecord::Base
     end
   end
   
-  def import
+  def import!
     raise 'can not import without a converted csv file' unless converted_csv_file.exists?
+    CandidateTransaction.where(oregon_state_file_id: self.id).delete_all
+
     CSV.foreach(converted_csv_file_uripath) do |row|
       trans_id, original_id, tran_date, tran_status, filer, contributor_payee, sub_type, amount, aggregate_amount, 
       contributor_payee_committee_id, filer_id, attest_by_name, attest_date, review_by_name, review_date, due_date, 
