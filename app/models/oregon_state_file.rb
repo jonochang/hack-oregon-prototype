@@ -68,10 +68,10 @@ private
 
     file = StringIO.new(@export_page.body)
     file.class.class_eval { attr_accessor :original_filename, :content_type } #add attr's that paperclip needs
-    file.original_filename = "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}.xls"
+    file.original_filename = "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
     file.content_type = "xls"
 
-    self.downloaded_file = file
+    self.source_xls_file = file
     self.downloaded_at = DateTime.now
   end
 end
