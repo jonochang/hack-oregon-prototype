@@ -58,8 +58,8 @@ private
 
     @agent.get("#{@base_url}/orestar/gotoPublicTransactionSearch.do") do |search_page|
       search_page.form_with(name: 'cneSearchForm') do |form|
-        form.cneSearchTranStartDate = from_date.strftime("%m/%d/%Y")
-        form.cneSearchTranEndDate = to_date.strftime("%m/%d/%Y")
+        form.cneSearchTranFiledStartDate = from_date.strftime("%m/%d/%Y")
+        form.cneSearchTranFiledEndDate = to_date.strftime("%m/%d/%Y")
 
         @results_page = @agent.submit(form, form.button_with(value: "Search"))
         @export_page  = @agent.click(@results_page.link_with(text: "Export To Excel Format"))
