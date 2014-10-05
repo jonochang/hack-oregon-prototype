@@ -1,6 +1,6 @@
-class CreateCandidateTransactions < ActiveRecord::Migration
+class CreateCampaignFinanceTransactions < ActiveRecord::Migration
   def change
-    create_table :candidate_transactions do |t|
+    create_table :campaign_finance_transactions do |t|
       t.references :oregon_state_file
       t.integer :source_id
       t.string :original_id
@@ -48,9 +48,9 @@ class CreateCandidateTransactions < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :candidate_transactions, :source_id
-    add_index :candidate_transactions, :oregon_state_file_id
-    add_index :candidate_transactions, :transaction_date
-    add_index :candidate_transactions, :filed_date
+    add_index :campaign_finance_transactions, :source_id
+    add_index :campaign_finance_transactions, :oregon_state_file_id
+    add_index :campaign_finance_transactions, :transaction_date
+    add_index :campaign_finance_transactions, :filed_date
   end
 end

@@ -1,4 +1,4 @@
-json.(@candidate_transaction, :id, :source_id, :original_id,
+json.(@campaign_finance_transaction, :id, :source_id, :original_id,
       :transaction_date,
       :transaction_status,
       :amount,

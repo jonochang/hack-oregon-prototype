@@ -1,8 +1,8 @@
-class Api::CandidateTransactionsController < ApplicationController
-  before_action :set_candidate_transaction, only: [:show]
+class Api::CampaignFinanceTransactionsController < ApplicationController
+  before_action :set_campaign_finance_transaction, only: [:show]
 
   def index
-    @candidate_transactions = CandidateTransaction.all
+    @campaign_finance_transactions = CampaignFinanceTransaction.all
   end
 
   def show
@@ -10,7 +10,7 @@ class Api::CandidateTransactionsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_candidate_transaction
-      @candidate_transaction = CandidateTransaction.find(params[:id])
+    def set_campaign_finance_transaction
+      @campaign_finance_transaction = CampaignFinanceTransaction.find(params[:id])
     end
 end

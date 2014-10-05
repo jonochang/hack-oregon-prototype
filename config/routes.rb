@@ -4,13 +4,13 @@ Rails.application.routes.draw do
   resources :users
 
   namespace :api do
-    get 'candidate_transactions' => 'candidate_transactions#index'
-    get 'candidate_transactions/:id' => 'candidate_transactions#show'
+    get 'campaign_finance_transactions' => 'campaign_finance_transactions#index'
+    get 'campaign_finance_transactions/:id' => 'campaign_finance_transactions#show'
 
     namespace :analytics do
-      get 'candidate_transactions/amounts_by_state' => 'candidate_transactions#amounts_by_state'
-      get 'candidate_transactions/amounts_by_filer' => 'candidate_transactions#amounts_by_filer'
-      get 'candidate_transactions/amounts_by_filer_contributor_payee' => 'candidate_transactions#amounts_by_filer_contributor_payee'
+      get 'campaign_finance_transactions/amounts_by_state' => 'campaign_finance_transactions#amounts_by_state'
+      get 'campaign_finance_transactions/amounts_by_filer' => 'campaign_finance_transactions#amounts_by_filer'
+      get 'campaign_finance_transactions/amounts_by_filer_contributor_payee' => 'campaign_finance_transactions#amounts_by_filer_contributor_payee'
     end
   end
 end

@@ -1,7 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :candidate_transaction do
+  factory :campaign_finance_transaction do
     source_id 1
     original_id "MyString"
     transaction_date "2014-10-04"

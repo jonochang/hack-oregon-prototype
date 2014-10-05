@@ -1,6 +1,6 @@
 require 'csv'
 class OregonStateFile < ActiveRecord::Base
-  has_many :candidate_transactions
+  has_many :campaign_finance_transactions
 
   has_attached_file :source_xls_file
   validates_attachment_content_type :source_xls_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
@@ -43,7 +43,7 @@ class OregonStateFile < ActiveRecord::Base
   
   def import!
     raise 'can not import without a converted csv file' unless converted_csv_file.exists?
-    CandidateTransaction.where(oregon_state_file_id: self.id).delete_all
+    CampaignFinanceTransaction.where(oregon_state_file_id: self.id).delete_all
 
     CSV.foreach(converted_csv_file_uripath) do |row|
       trans_id, original_id, tran_date, tran_status, filer, contributor_payee, sub_type, amount, aggregate_amount, 
@@ -53,7 +53,7 @@ class OregonStateFile < ActiveRecord::Base
       addr_line1, addr_line2, city, state, zip, zip_plus_four, county, purpose_codes, exp_date = row
       
       next if trans_id == 'Tran Id' || trans_id.to_s.strip.empty?
-      CandidateTransaction.create! oregon_state_file: self,
+      CampaignFinanceTransaction.create! oregon_state_file: self,
         source_id: trans_id,
         original_id: original_id,
         transaction_date: parse_date(tran_date), 

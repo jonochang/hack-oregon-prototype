@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 20141004074114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "candidate_transactions", force: true do |t|
+  create_table "campaign_finance_transactions", force: true do |t|
     t.integer  "oregon_state_file_id"
     t.integer  "source_id"
     t.string   "original_id"
@@ -64,10 +64,10 @@ ActiveRecord::Schema.define(version: 20141004074114) do
     t.datetime "updated_at"
   end
 
-  add_index "candidate_transactions", ["filed_date"], name: "index_candidate_transactions_on_filed_date", using: :btree
-  add_index "candidate_transactions", ["oregon_state_file_id"], name: "index_candidate_transactions_on_oregon_state_file_id", using: :btree
-  add_index "candidate_transactions", ["source_id"], name: "index_candidate_transactions_on_source_id", using: :btree
-  add_index "candidate_transactions", ["transaction_date"], name: "index_candidate_transactions_on_transaction_date", using: :btree
+  add_index "campaign_finance_transactions", ["filed_date"], name: "index_campaign_finance_transactions_on_filed_date", using: :btree
+  add_index "campaign_finance_transactions", ["oregon_state_file_id"], name: "index_campaign_finance_transactions_on_oregon_state_file_id", using: :btree
+  add_index "campaign_finance_transactions", ["source_id"], name: "index_campaign_finance_transactions_on_source_id", using: :btree
+  add_index "campaign_finance_transactions", ["transaction_date"], name: "index_campaign_finance_transactions_on_transaction_date", using: :btree
 
   create_table "oregon_state_files", force: true do |t|
     t.integer  "data_type"
