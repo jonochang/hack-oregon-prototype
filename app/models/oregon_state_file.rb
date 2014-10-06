@@ -22,6 +22,7 @@ class OregonStateFile < ActiveRecord::Base
   def convert_to_csv
     raise 'can not convert to csv without a source excel file' unless source_xls_file.exists?
     file = Tempfile.new(['xls2csv-', '.csv'])
+    file.binmode
     begin
       file.write(open(source_xls_file_uripath) {|f| f.read })
       file.rewind
