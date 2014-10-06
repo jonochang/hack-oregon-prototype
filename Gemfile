@@ -10,7 +10,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0',          group: :doc
 gem 'spring',        group: :development
 gem 'bootstrap-sass'
-gem 'devise'
+gem 'devise', '~> 3.3.0'
 gem 'high_voltage'
 gem 'pg'
 gem 'simple_form'
@@ -19,6 +19,7 @@ gem 'mechanize'
 gem 'paperclip'
 gem 'aws-sdk'
 
+gem 'activeadmin', github: 'activeadmin'
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller', :platforms=>[:mri_21]
