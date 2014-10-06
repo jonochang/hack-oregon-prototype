@@ -178,6 +178,10 @@ private
       
       next if trans_id == 'Tran Id' || trans_id.to_s.strip.empty?
       CampaignFinanceTransaction.create! oregon_state_file: self,
+        transaction_type: TransactionType.where(title: sub_type).first,
+        committee: Committee.where(source_id: filer_id).first,
+        transaction_date_entity: Analytics::DateEntity.where(full_date: parse_date(tran_date)).first,
+        filed_date_entity: Analytics::DateEntity.where(full_date: parse_date(filed_date)).first,
         source_id: trans_id,
         original_id: original_id,
         transaction_date: parse_date(tran_date), 
