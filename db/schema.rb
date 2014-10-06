@@ -11,13 +11,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141004074114) do
+ActiveRecord::Schema.define(version: 20141005220035) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "analytics_date_entities", force: true do |t|
+    t.date     "full_date"
+    t.integer  "day_of_week"
+    t.integer  "day_num_in_month"
+    t.integer  "day_num_overall"
+    t.string   "day_name"
+    t.string   "day_abbrev"
+    t.boolean  "is_weekday"
+    t.integer  "week_num_in_year"
+    t.integer  "week_num_overall"
+    t.date     "week_begin_date"
+    t.integer  "month"
+    t.integer  "month_num_overall"
+    t.string   "month_name"
+    t.string   "month_abbrev"
+    t.integer  "quarter"
+    t.integer  "yearmonth"
+    t.integer  "year"
+    t.integer  "fiscal_month"
+    t.integer  "fiscal_quarter"
+    t.integer  "fiscal_year"
+    t.boolean  "is_last_day_in_month"
+    t.date     "same_day_a_year_ago"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "campaign_finance_transactions", force: true do |t|
     t.integer  "oregon_state_file_id"
+    t.integer  "transaction_type_id"
     t.integer  "source_id"
     t.string   "original_id"
     t.date     "transaction_date"
