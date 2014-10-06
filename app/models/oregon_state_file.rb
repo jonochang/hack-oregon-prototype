@@ -171,11 +171,13 @@ private
         form.cneSearchTranFiledEndDate = to_date.strftime("%m/%d/%Y")
 
         @results_page = @agent.submit(form, form.button_with(value: "Search"))
-        @export_page  = @agent.click(@results_page.link_with(text: "Export To Excel Format"))
+        if link = @results_page.link_with(text: "Export To Excel Format")
+          @export_page  = @agent.click(link)
+          set_source_xls_file_and_downloaded_at @export_page.body, "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
+        end
       end
     end
 
-    set_source_xls_file_and_downloaded_at @export_page.body, "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
   end
 
 end
