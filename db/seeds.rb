@@ -46,3 +46,8 @@ TransactionType.transaction do
 end
 puts 'CREATED Transaction Types'
 
+Analytics::DateEntity.transaction do
+  Analytics::DateEntity.seed 40.years
+end
+
+puts 'CREATED Analytics Date Entities'
