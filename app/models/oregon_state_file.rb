@@ -6,7 +6,7 @@ class OregonStateFile < ActiveRecord::Base
   validates_attachment_content_type :source_xls_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
 
   has_attached_file :converted_csv_file
-  validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain']
+  validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain', 'text/x-pascal']
 
   enum data_type: [:transactions, :committees]
 
