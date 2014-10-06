@@ -86,6 +86,13 @@ ActiveRecord::Schema.define(version: 20141004074114) do
     t.datetime "updated_at"
   end
 
+  create_table "transaction_types", force: true do |t|
+    t.string   "title"
+    t.integer  "direction"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
