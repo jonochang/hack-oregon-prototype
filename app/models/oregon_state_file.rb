@@ -20,6 +20,7 @@ class OregonStateFile < ActiveRecord::Base
   end
 
   def convert_to_csv
+    raise 'can not convert to csv without a source excel file' unless source_xls_file.exists?
     file = Tempfile.new(['xls2csv-', '.csv'])
     begin
       file.write(open(source_xls_file_uripath) {|f| f.read })
@@ -48,6 +49,8 @@ class OregonStateFile < ActiveRecord::Base
     case data_type
     when 'transactions'
       import_transactions!
+    when 'committees'
+      import_committees!
     end
   end
 
@@ -217,4 +220,46 @@ private
     end
   end
 
+  def import_committees!
+    raise 'can not import without a converted csv file' unless converted_csv_file.exists?
+    Committee.where(oregon_state_file_id: self.id).delete_all
+
+    CSV.foreach(converted_csv_file_uripath) do |row|
+      committee_id, committee_name, committee_type, committee_subtype, candidate_office, candidate_office_group, 
+      filing_date, organization_filing_date, treasurer_first_name, treasurer_last_name, treasurer_mailing_address, 
+      treasurer_work_phone, treasurer_fax, candidate_first_name, candidate_last_name, candidate_maling_address, 
+      candidate_work_phone, candidate_residence_phone, candidate_fax, candidate_email, active_election, measure = row
+      
+      next if committee_id == 'Committee Id' || committee_id.to_s.strip.empty?
+
+      begin
+        committee = Committee.find_or_create_by source_id: committee_id
+        committee.update_attributes! oregon_state_file: self,
+          committee_name: committee_name,
+          committee_type: committee_type,
+          committee_subtype: committee_subtype,
+          candidate_office: candidate_office,
+          candidate_office_group: candidate_office_group,
+          filing_date: parse_date(filing_date),
+          filing_date_entity: Analytics::DateEntity.where(full_date: parse_date(filing_date)).first,
+          organization_filing_date: parse_date(organization_filing_date), 
+          treasurer_first_name: treasurer_first_name,
+          treasurer_last_name: treasurer_last_name,
+          treasurer_mailing_address: treasurer_mailing_address,
+          treasurer_work_phone: treasurer_work_phone,
+          treasurer_fax: treasurer_fax,
+          candidate_first_name: candidate_first_name,
+          candidate_last_name: candidate_last_name,
+          candidate_maling_address: candidate_maling_address,
+          candidate_work_phone: candidate_work_phone,
+          candidate_residence_phone: candidate_residence_phone,
+          candidate_fax: candidate_fax,
+          candidate_email: candidate_email,
+          active_election: active_election,
+          measure: measure
+      rescue ActiveRecord::RecordNotUnique
+        retry
+      end
+    end
+  end
 end
