@@ -170,7 +170,7 @@ private
     raise 'can not import without a converted csv file' unless converted_csv_file.exists?
     CampaignFinanceTransaction.where(oregon_state_file_id: self.id).delete_all
 
-    CSV.foreach(converted_csv_file_uripath) do |row|
+    CSV.parse(open(converted_csv_file_uripath).read) do |row|
       trans_id, original_id, tran_date, tran_status, filer, contributor_payee, sub_type, amount, aggregate_amount, 
       contributor_payee_committee_id, filer_id, attest_by_name, attest_date, review_by_name, review_date, due_date, 
       occptn_ltr_date, pymt_sched_txt, purp_desc, intrst_rate, check_nbr, tran_stsfd_ind, filed_by_name, filed_date, 
@@ -232,7 +232,7 @@ private
     raise 'can not import without a converted csv file' unless converted_csv_file.exists?
     Committee.where(oregon_state_file_id: self.id).delete_all
 
-    CSV.foreach(converted_csv_file_uripath) do |row|
+    CSV.parse(open(converted_csv_file_uripath).read) do |row|
       committee_id, committee_name, committee_type, committee_subtype, candidate_office, candidate_office_group, 
       filing_date, organization_filing_date, treasurer_first_name, treasurer_last_name, treasurer_mailing_address, 
       treasurer_work_phone, treasurer_fax, candidate_first_name, candidate_last_name, candidate_maling_address, 
