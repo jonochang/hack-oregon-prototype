@@ -2,6 +2,11 @@ class CreateCampaignFinanceTransactions < ActiveRecord::Migration
   def change
     create_table :campaign_finance_transactions do |t|
       t.references :oregon_state_file
+      t.references :transaction_type
+      t.references :committee
+      t.integer :transaction_date_entity_id
+      t.integer :filed_date_entity_id
+
       t.integer :source_id
       t.string :original_id
       t.date :transaction_date
@@ -48,9 +53,10 @@ class CreateCampaignFinanceTransactions < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index :campaign_finance_transactions, :source_id
+    add_index :campaign_finance_transactions, :source_id, unique: true
     add_index :campaign_finance_transactions, :oregon_state_file_id
     add_index :campaign_finance_transactions, :transaction_date
     add_index :campaign_finance_transactions, :filed_date
+    add_index :campaign_finance_transactions, :transaction_type_id
   end
 end

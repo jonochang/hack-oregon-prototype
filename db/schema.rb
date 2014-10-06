@@ -46,6 +46,9 @@ ActiveRecord::Schema.define(version: 20141005220035) do
   create_table "campaign_finance_transactions", force: true do |t|
     t.integer  "oregon_state_file_id"
     t.integer  "transaction_type_id"
+    t.integer  "committee_id"
+    t.integer  "transaction_date_entity_id"
+    t.integer  "filed_date_entity_id"
     t.integer  "source_id"
     t.string   "original_id"
     t.date     "transaction_date"
@@ -94,8 +97,43 @@ ActiveRecord::Schema.define(version: 20141005220035) do
 
   add_index "campaign_finance_transactions", ["filed_date"], name: "index_campaign_finance_transactions_on_filed_date", using: :btree
   add_index "campaign_finance_transactions", ["oregon_state_file_id"], name: "index_campaign_finance_transactions_on_oregon_state_file_id", using: :btree
-  add_index "campaign_finance_transactions", ["source_id"], name: "index_campaign_finance_transactions_on_source_id", using: :btree
+  add_index "campaign_finance_transactions", ["source_id"], name: "index_campaign_finance_transactions_on_source_id", unique: true, using: :btree
   add_index "campaign_finance_transactions", ["transaction_date"], name: "index_campaign_finance_transactions_on_transaction_date", using: :btree
+  add_index "campaign_finance_transactions", ["transaction_type_id"], name: "index_campaign_finance_transactions_on_transaction_type_id", using: :btree
+
+  create_table "committees", force: true do |t|
+    t.integer  "oregon_state_file_id"
+    t.integer  "source_id"
+    t.string   "committee_name"
+    t.string   "committee_type"
+    t.string   "committee_subtype"
+    t.string   "candidate_office"
+    t.string   "candidate_office_group"
+    t.date     "filing_date"
+    t.integer  "filing_date_entity_id"
+    t.date     "organization_filing_date"
+    t.string   "treasurer_first_name"
+    t.string   "treasurer_last_name"
+    t.string   "treasurer_mailing_address"
+    t.string   "treasurer_work_phone"
+    t.string   "treasurer_fax"
+    t.string   "candidate_first_name"
+    t.string   "candidate_last_name"
+    t.string   "candidate_maling_address"
+    t.string   "candidate_work_phone"
+    t.string   "candidate_residence_phone"
+    t.string   "candidate_fax"
+    t.string   "candidate_email"
+    t.string   "active_election"
+    t.text     "measure"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "committees", ["committee_type"], name: "index_committees_on_committee_type", using: :btree
+  add_index "committees", ["filing_date_entity_id"], name: "index_committees_on_filing_date_entity_id", using: :btree
+  add_index "committees", ["oregon_state_file_id"], name: "index_committees_on_oregon_state_file_id", using: :btree
+  add_index "committees", ["source_id"], name: "index_committees_on_source_id", unique: true, using: :btree
 
   create_table "oregon_state_files", force: true do |t|
     t.integer  "data_type"
