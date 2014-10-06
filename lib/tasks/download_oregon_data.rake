@@ -37,5 +37,16 @@ namespace :data do
       f.import!
     end
   end
+
+  desc 'Download Committees eg., download_committees[2013,2014]'
+  task :download_committees_for, [:from, :to] => :environment do |t, args|
+    (args[:from].to_i..args[:to].to_i).each do |year|
+      puts "RAKE :: Downloading Oregon State Committees for #{year}"
+      f = OregonStateFile.new data_type: :committees, query: {year: year}
+      f.download
+      f.save!
+    end
+  end
+
 end
 
