@@ -45,60 +45,9 @@ class OregonStateFile < ActiveRecord::Base
   end
   
   def import!
-    raise 'can not import without a converted csv file' unless converted_csv_file.exists?
-    CampaignFinanceTransaction.where(oregon_state_file_id: self.id).delete_all
-
-    CSV.foreach(converted_csv_file_uripath) do |row|
-      trans_id, original_id, tran_date, tran_status, filer, contributor_payee, sub_type, amount, aggregate_amount, 
-      contributor_payee_committee_id, filer_id, attest_by_name, attest_date, review_by_name, review_date, due_date, 
-      occptn_ltr_date, pymt_sched_txt, purp_desc, intrst_rate, check_nbr, tran_stsfd_ind, filed_by_name, filed_date, 
-      addr_book_agent_name, book_type, title_txt, occptn_txt, emp_name, emp_city, emp_state, employ_ind, self_employ_ind, 
-      addr_line1, addr_line2, city, state, zip, zip_plus_four, county, purpose_codes, exp_date = row
-      
-      next if trans_id == 'Tran Id' || trans_id.to_s.strip.empty?
-      CampaignFinanceTransaction.create! oregon_state_file: self,
-        source_id: trans_id,
-        original_id: original_id,
-        transaction_date: parse_date(tran_date), 
-        transaction_status: tran_status, 
-        filer: filer,
-        contributor_payee: contributor_payee,
-        sub_type: sub_type,
-        amount: amount,
-        aggregate_amount: aggregate_amount,
-        contributor_payee_committee_id: contributor_payee_committee_id,
-        filer_id: filer_id,
-        attest_by_name: attest_by_name,
-        attest_date: parse_date(attest_date),
-        review_by_name: review_by_name,
-        review_date: parse_date(review_date),
-        due_date: parse_date(due_date),
-        occptn_ltr_date: parse_date(occptn_ltr_date),
-        payment_schedule_txt: pymt_sched_txt,
-        purpose_description: purp_desc,
-        interest_rate: intrst_rate,
-        check_number: check_nbr,
-        tran_stsfd_indicator: tran_stsfd_ind,
-        filed_by_name: filed_by_name,
-        filed_date: parse_date(filed_date),
-        addr_book_agent_name: addr_book_agent_name,
-        book_type: book_type,
-        title: title_txt,
-        occupation: occptn_txt,
-        employer_name: emp_name,
-        employer_city: emp_city,
-        employer_state: emp_state,
-        employer_indicator: employ_ind,
-        self_employed_indicator: self_employ_ind,
-        address_line1: addr_line1,
-        address_line2: addr_line2,
-        city: city,
-        state: state,
-        zip: zip,
-        zip_plus_four: zip_plus_four,
-        county: county,
-        purpose_codes: purpose_codes,
-        exp_date: parse_date(exp_date)
+    case data_type
+    when 'transactions'
+      import_transactions!
     end
   end
 
@@ -207,6 +156,64 @@ private
         @export_page  = @agent.click(link)
         set_source_xls_file_and_downloaded_at @export_page.body, "sos_committees_#{year}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
       end
+    end
+  end
+
+  def import_transactions!
+    raise 'can not import without a converted csv file' unless converted_csv_file.exists?
+    CampaignFinanceTransaction.where(oregon_state_file_id: self.id).delete_all
+
+    CSV.foreach(converted_csv_file_uripath) do |row|
+      trans_id, original_id, tran_date, tran_status, filer, contributor_payee, sub_type, amount, aggregate_amount, 
+      contributor_payee_committee_id, filer_id, attest_by_name, attest_date, review_by_name, review_date, due_date, 
+      occptn_ltr_date, pymt_sched_txt, purp_desc, intrst_rate, check_nbr, tran_stsfd_ind, filed_by_name, filed_date, 
+      addr_book_agent_name, book_type, title_txt, occptn_txt, emp_name, emp_city, emp_state, employ_ind, self_employ_ind, 
+      addr_line1, addr_line2, city, state, zip, zip_plus_four, county, purpose_codes, exp_date = row
+      
+      next if trans_id == 'Tran Id' || trans_id.to_s.strip.empty?
+      CampaignFinanceTransaction.create! oregon_state_file: self,
+        source_id: trans_id,
+        original_id: original_id,
+        transaction_date: parse_date(tran_date), 
+        transaction_status: tran_status, 
+        filer: filer,
+        contributor_payee: contributor_payee,
+        sub_type: sub_type,
+        amount: amount,
+        aggregate_amount: aggregate_amount,
+        contributor_payee_committee_id: contributor_payee_committee_id,
+        filer_id: filer_id,
+        attest_by_name: attest_by_name,
+        attest_date: parse_date(attest_date),
+        review_by_name: review_by_name,
+        review_date: parse_date(review_date),
+        due_date: parse_date(due_date),
+        occptn_ltr_date: parse_date(occptn_ltr_date),
+        payment_schedule_txt: pymt_sched_txt,
+        purpose_description: purp_desc,
+        interest_rate: intrst_rate,
+        check_number: check_nbr,
+        tran_stsfd_indicator: tran_stsfd_ind,
+        filed_by_name: filed_by_name,
+        filed_date: parse_date(filed_date),
+        addr_book_agent_name: addr_book_agent_name,
+        book_type: book_type,
+        title: title_txt,
+        occupation: occptn_txt,
+        employer_name: emp_name,
+        employer_city: emp_city,
+        employer_state: emp_state,
+        employer_indicator: employ_ind,
+        self_employed_indicator: self_employ_ind,
+        address_line1: addr_line1,
+        address_line2: addr_line2,
+        city: city,
+        state: state,
+        zip: zip,
+        zip_plus_four: zip_plus_four,
+        county: county,
+        purpose_codes: purpose_codes,
+        exp_date: parse_date(exp_date)
     end
   end
 
