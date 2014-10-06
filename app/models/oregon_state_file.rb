@@ -15,7 +15,7 @@ class OregonStateFile < ActiveRecord::Base
     when 'transactions'
       download_transactions query['from_date'], query['to_date']
     when 'committees'
-      download_committees query['year']
+      download_committees query['starts_with_name']
     end
   end
 
@@ -135,29 +135,32 @@ private
 
   end
 
-  def download_committees year
+  def download_committees starts_with_name
     set_agent
 
-    @agent.get("#{@base_url}/orestar/GotoSearchByElection.do") do |search_page|
-      @results_page = @agent.post('https://secure.sos.state.or.us/orestar/CommitteeSearchSecondPage.do', {
-        yearActive: year,
-        election: '',
-        filerType: '',
-        committeeOffice: '',
-        partyAffiliation: '',
-        controlledCommCanLastName: '',
+    @agent.get("#{@base_url}/orestar/GotoSearchByName.do") do |search_page|
+      @results_page = @agent.post('https://secure.sos.state.or.us/orestar/CommitteeSearchFirstPage.do', {
+        buttonName: '',
+        page: 100,
+        committeeName: starts_with_name,
+        committeeNameMultiboxText: 'starts',
+        committeeId: '',
+        firstName: '',
+        firstNameMultiboxText: 'contains',
+        lastName: '',
+        lastNameMultiboxText: 'contains',
         discontinuedSOO: 'on',
-        approvedSOO: false,
-        pendingApprovalSOO: false,
-        insufficientSOO: false,
-        resolvedSOO: false,
-        rejectedSOO: false,
-        buttonName: 'electionSearch'
+        submit: 'Submit',
+        approvedSOO: 'true',
+        pendingApprovalSOO: 'false',
+        insufficientSOO: 'false',
+        resolvedSOO: 'false',
+        rejectedSOO: 'false'
       }) 
 
       if link = @results_page.link_with(text: "Export To Excel Format")
         @export_page  = @agent.click(link)
-        set_source_xls_file_and_downloaded_at @export_page.body, "sos_committees_#{year}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
+        set_source_xls_file_and_downloaded_at @export_page.body, "sos_committees_#{starts_with_name}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
       end
     end
   end
