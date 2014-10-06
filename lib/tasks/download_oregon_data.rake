@@ -38,15 +38,33 @@ namespace :data do
     end
   end
 
-  desc 'Download Committees eg., download_committees[2013,2014]'
+  desc 'Download Committees eg., download_committees[A,Z]'
   task :download_committees_for, [:from, :to] => :environment do |t, args|
-    (args[:from].to_i..args[:to].to_i).each do |year|
-      puts "RAKE :: Downloading Oregon State Committees for #{year}"
-      f = OregonStateFile.new data_type: :committees, query: {year: year}
+    (args[:from]..args[:to]).each do |starts_with_name|
+      puts "RAKE :: Downloading Oregon State Committees starting with #{starts_with_name}"
+      f = OregonStateFile.new data_type: :committees, query: {starts_with_name: starts_with_name}
       f.download
       f.save!
     end
   end
 
+  desc 'Process Committees (download, covert, import) eg., process_committees_for[A,Z]'
+  task :process_committees_for, [:from, :to] => :environment do |t, args|
+    (args[:from]..args[:to]).each do |starts_with_name|
+      puts "RAKE :: Downloading Oregon State Committees starting with #{starts_with_name}"
+      f = OregonStateFile.new data_type: :committees, query: {starts_with_name: starts_with_name}
+      f.download
+      f.save!
+      if f.source_xls_file.exists?
+        puts "RAKE :: Converting Oregon State Committees for #{starts_with_name}"
+        f.convert_to_csv
+        f.save!
+        if f.converted_csv_file.exists?
+          puts "RAKE :: Importing Oregon State Committees for #{starts_with_name}"
+          f.import!
+        end
+      end
+    end
+  end
 end
 
