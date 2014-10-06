@@ -134,6 +134,16 @@ private
     @base_url = URI 'https://secure.sos.state.or.us'
   end
 
+  def set_source_xls_file_and_downloaded_at body, filename
+    file = StringIO.new(body)
+    file.class.class_eval { attr_accessor :original_filename, :content_type } #add attr's that paperclip needs
+    file.original_filename = filename
+    file.content_type = "xls"
+
+    self.source_xls_file = file
+    self.downloaded_at = DateTime.now
+  end
+
   def download_transactions from, to
     from_date = case from
       when Date
@@ -165,12 +175,7 @@ private
       end
     end
 
-    file = StringIO.new(@export_page.body)
-    file.class.class_eval { attr_accessor :original_filename, :content_type } #add attr's that paperclip needs
-    file.original_filename = "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
-    file.content_type = "xls"
-
-    self.source_xls_file = file
-    self.downloaded_at = DateTime.now
+    set_source_xls_file_and_downloaded_at @export_page.body, "sos_transactions_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
   end
+
 end
