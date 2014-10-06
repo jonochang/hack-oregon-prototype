@@ -8,11 +8,14 @@ class OregonStateFile < ActiveRecord::Base
   has_attached_file :converted_csv_file
   validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain']
 
-  enum data_type: [:transactions]
+  enum data_type: [:transactions, :committees]
 
   def download
-    if data_type == 'transactions'
+    case data_type
+    when 'transactions'
       download_transactions query['from_date'], query['to_date']
+    when 'committees'
+      download_committees query['year']
     end
   end
 
@@ -178,6 +181,33 @@ private
       end
     end
 
+  end
+
+  def download_committees year
+    set_agent
+
+    @agent.get("#{@base_url}/orestar/GotoSearchByElection.do") do |search_page|
+      @results_page = @agent.post('https://secure.sos.state.or.us/orestar/CommitteeSearchSecondPage.do', {
+        yearActive: year,
+        election: '',
+        filerType: '',
+        committeeOffice: '',
+        partyAffiliation: '',
+        controlledCommCanLastName: '',
+        discontinuedSOO: 'on',
+        approvedSOO: false,
+        pendingApprovalSOO: false,
+        insufficientSOO: false,
+        resolvedSOO: false,
+        rejectedSOO: false,
+        buttonName: 'electionSearch'
+      }) 
+
+      if link = @results_page.link_with(text: "Export To Excel Format")
+        @export_page  = @agent.click(link)
+        set_source_xls_file_and_downloaded_at @export_page.body, "sos_committees_#{year}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
+      end
+    end
   end
 
 end
