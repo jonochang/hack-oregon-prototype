@@ -8,7 +8,7 @@ class OregonStateFile < ActiveRecord::Base
   has_attached_file :converted_csv_file
   validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain', 'text/x-pascal']
 
-  enum data_type: [:transactions, :committees]
+  enum data_type: [:transactions, :committees, :candidates]
 
   def download
     case data_type
@@ -16,6 +16,8 @@ class OregonStateFile < ActiveRecord::Base
       download_transactions query['from_date'], query['to_date']
     when 'committees'
       download_committees query['starts_with_name']
+    when 'candidates'
+      download_candidates query['from_date'], query['to_date']
     end
   end
 
@@ -163,6 +165,59 @@ private
         @export_page  = @agent.click(link)
         set_source_xls_file_and_downloaded_at @export_page.body, "sos_committees_#{starts_with_name}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
       end
+    end
+  end
+
+  def download_candidates from, to
+    from_date = case from
+      when Date
+        from
+      when String
+        Date.parse from
+      else
+        raise 'invalid from date'
+    end
+
+    to_date = case to
+      when Date
+        from
+      when String
+        Date.parse to
+      else
+        raise 'invalid to date'
+    end
+
+    set_agent
+
+    @agent.get("#{@base_url}/orestar/CFSearchPage.do") do |search_page|
+      search_page.form_with(name: 'cfSearchPageForm') do |form|
+        form.cfFilingFromDate = from_date.strftime("%m/%d/%Y")
+        form.cfFilingToDate = to_date.strftime("%m/%d/%Y")
+
+        @results_page = @agent.submit(form, form.button_with(value: "Submit"))
+        if link = @results_page.link_with(text: "Export")
+          @export_page  = @agent.click(link)
+          set_source_xls_file_and_downloaded_at @export_page.body, "sos_candidates_#{from_date.strftime("%Y%m%d")}-#{to_date.strftime("%Y%m%d")}-#{DateTime.now.strftime("%Y%m%d%H%M%S")}.xls"
+        end
+      end
+
+      #@results_page = @agent.post('https://secure.sos.state.or.us/orestar/cfFilings.do', {
+      #  cfSearchButtonName: '',
+      #  cfName: '',
+      #  cfyearActive: '',
+      #  cfElection: '',
+      #  cfOffice: '',
+      #  cfPartyAffiliation: '',
+      #  cfFilingType: '',
+      #  cfFilingFromDate: from_date.strftime("%m/%d/%Y"),
+      #  cfFilingToDate: to_date.strftime("%m/%d/%Y"),
+      #  cfWithDrawFromDate: '',
+      #  cfWithDrawToDate: ''
+      #}) 
+
+      #if link = @results_page.link_with(text: "Export To Excel Format")
+      #  @export_page  = @agent.click(link)
+      #end
     end
   end
 

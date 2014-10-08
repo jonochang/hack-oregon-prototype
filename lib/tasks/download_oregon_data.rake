@@ -66,5 +66,20 @@ namespace :data do
       end
     end
   end
+
+  desc 'Download Candidates eg., download_candidates[2014,2014]'
+  task :download_candidates_for, [:from, :to] => :environment do |t, args|
+    (args[:from].to_i..args[:to].to_i).each do |year|
+      (1..12).each do |month|
+        from_date = Date.new(year, month, 1)
+        to_date = from_date.end_of_month
+        puts "RAKE :: Downloading Oregon State Candidates for #{from_date} - #{to_date}"
+        f = OregonStateFile.new data_type: :candidates, query: {from_date: from_date, to_date: to_date}
+        f.download
+        f.save!
+      end
+    end
+  end
+
 end
 
