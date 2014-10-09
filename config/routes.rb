@@ -10,8 +10,9 @@ Rails.application.routes.draw do
   get '/candidates/:id' => 'candidates#show', as: 'candidate'
 
   namespace :api do
-    get 'campaign_finance_transactions' => 'campaign_finance_transactions#index'
-    get 'campaign_finance_transactions/:id' => 'campaign_finance_transactions#show'
+    get 'candidates' => 'candidates#index'
+    get 'candidates/:candidate_id/campaign_finance_transactions' => 'campaign_finance_transactions#index'
+    get 'candidates/:candidate_id/campaign_finance_transactions/:id' => 'campaign_finance_transactions#show'
 
     namespace :analytics do
       get 'campaign_finance_transactions/amounts_by_state' => 'campaign_finance_transactions#amounts_by_state'
