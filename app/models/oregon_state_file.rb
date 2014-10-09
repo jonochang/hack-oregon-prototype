@@ -8,8 +8,7 @@ class OregonStateFile < ActiveRecord::Base
   has_attached_file :converted_csv_file,
     s3_headers: lambda { |attachment|
       { 
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => "attachment; filename=#{attachment.send(:original_filename)}",
+        'Content-Type' => 'text/csv'
       }
     }
   validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain', 'text/x-pascal', 'application/octet-stream']
