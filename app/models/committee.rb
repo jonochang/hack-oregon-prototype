@@ -1,6 +1,7 @@
 class Committee < ActiveRecord::Base
   belongs_to :oregon_state_file
   belongs_to :filing_date_entity, class_name: 'Analytics::DateEntity'
+  belongs_to :candidate
 
   has_many :campaign_finance_transactions
 
