@@ -1,7 +1,7 @@
 Hack Oregon Prototype
 ================
 
-This application was inspired by my meeting with Sam Higgins and Melissa Lewis at [Hack Oregon](http://www.hackoregon.org/) during their meetup on the 30th of September 2014. They kindly showed me their project and I decided to build a quick Ruby on Rails prototype in an attempt to understand what the Hack Oregon team wanted to build.
+This application was inspired by my meeting with Sam Higgins and Melissa Lewis at [Hack Oregon](http://www.hackoregon.org/) during their meetup on the 30th of September 2014. They kindly showed me their project and I decided to build a quick Ruby on Rails prototype in an attempt to understand what the Hack Oregon team wanted to build. This project was done over about a week, taking about 2-3 days of work with most of it taking place over the weekend of 4th to 5th of October 2014.
 
 Background
 -----------
