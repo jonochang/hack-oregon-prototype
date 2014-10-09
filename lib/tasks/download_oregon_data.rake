@@ -67,16 +67,39 @@ namespace :data do
     end
   end
 
-  desc 'Download Candidates eg., download_candidates[2014,2014]'
-  task :download_candidates_for, [:from, :to] => :environment do |t, args|
+  desc 'Download Candidate Filings eg., download_candidate_filings[2014,2014]'
+  task :download_candidate_filings_for, [:from, :to] => :environment do |t, args|
     (args[:from].to_i..args[:to].to_i).each do |year|
       (1..12).each do |month|
         from_date = Date.new(year, month, 1)
         to_date = from_date.end_of_month
-        puts "RAKE :: Downloading Oregon State Candidates for #{from_date} - #{to_date}"
-        f = OregonStateFile.new data_type: :candidates, query: {from_date: from_date, to_date: to_date}
+        puts "RAKE :: Downloading Oregon State Candidates Filings for #{from_date} - #{to_date}"
+        f = OregonStateFile.new data_type: :candidate_filings, query: {from_date: from_date, to_date: to_date}
         f.download
         f.save!
+      end
+    end
+  end
+
+  desc 'Process Candidate Filings eg., process_candidate_filings[2014,2014]'
+  task :process_candidate_filings_for, [:from, :to] => :environment do |t, args|
+    (args[:from].to_i..args[:to].to_i).each do |year|
+      (1..12).each do |month|
+        from_date = Date.new(year, month, 1)
+        to_date = from_date.end_of_month
+        puts "RAKE :: Downloading Oregon State Candidates Filings for #{from_date} - #{to_date}"
+        f = OregonStateFile.new data_type: :candidate_filings, query: {from_date: from_date, to_date: to_date}
+        f.download
+        f.save!
+        if f.source_xls_file.exists?
+          puts "RAKE :: Converting Oregon State Candidate filings for #{from_date} - #{to_date}"
+          f.convert_to_csv
+          f.save!
+          if f.converted_csv_file.exists?
+            puts "RAKE :: Importing Oregon State Candidate filings for #{from_date} - #{to_date}"
+            f.import!
+          end
+        end
       end
     end
   end
