@@ -14,6 +14,21 @@ class CandidatesController < ApplicationController
                                           .sort_by{|k,v| v}
                                           .reverse
 
+    @stats = @candidate.stats_by_date Date.new(2014,8,1), Date.today
+    @types = @candidate.campaign_finance_transactions.select(:sub_type).uniq.pluck(:sub_type)
+
+    @stats_for_chart = @types.map{|key|
+      {
+        key: key,
+        values: @stats.map{|v|
+            {
+              x: v[:date],
+              y: v[key.to_sym].to_i
+            }
+          }
+      }
+    }
+    
     @transaction_type_summary_for_chart = [
       {
         key: 'Transaction Types',

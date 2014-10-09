@@ -74,16 +74,52 @@ javascript:
     return chart;
   });
 
-table
-  tbody
-    tr
-      - @transaction_type_summary.sort.each do |type, amount|
-        td
-          = type
-        td
-          = number_to_currency amount
-
 h4 Campaign Finance Transactions
+
+svg.transactions style='height:600px; width:690px;'
+
+javascript:
+
+  function formatAnalyticsData() {
+    var data = #{@stats_for_chart.to_json.html_safe}
+
+    return $.map(data, function(k) {
+      return {
+        key: k.key,
+        values: $.map(k.values, function(v) {
+          return {
+            x: new Date(v.x),
+            y: v.y
+          }
+        })
+      }
+    })
+  }
+
+  nv.addGraph(function() {
+    var chart = nv.models.lineChart()
+      .margin({top: 30, right: 60, bottom: 50, left: 70})
+      .useInteractiveGuideline(true)
+      .color(d3.scale.category10().range());
+
+    chart.xAxis.axisLabel("Date")
+      .tickFormat(function(d) {
+        return d3.time.format('%b %d')(new Date(d));
+      });
+
+    chart.yAxis.axisLabel("Amount")
+      .tickFormat(d3.format('$,f'));
+
+    d3.select('svg.transactions')
+      .datum(formatAnalyticsData)
+      .transition().duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
 table.table.table-bordered.table-hover
   thead
     tr
