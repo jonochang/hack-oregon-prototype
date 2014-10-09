@@ -35,6 +35,11 @@ Once the XLS spreadsheets are downloaded, I also tried multiple approaches to im
 
 For some of the XLS files, both the spreadsheet and roo gems would run at 100% ruby cpu usage for more than 10 minutes before I decided to give up on it. Other times it would return an empty array of data. I could not compile gnumeric via MacPorts, so I gave up on that too. I'm using xls2csv from CatDoc, which works well, and I've compiled and committed a binary for deploying to Heroku in /.heroku/
 
+There's a list of rake tasks under the data namespace to help you import data. eg.,
+foreman run rake data:process_candidate_filings_for[2013,2014]
+foreman run rake data:process_committees_for[A,Z]
+foreman run rake data:process_transactions_for[2014-09-01,2014-10-03]
+
 Architecture
 -----------
 
@@ -43,6 +48,20 @@ Aside from the gems listed in the Gemfile, key external dependencies are:
 - CatDoc (I'm using xls2csv)
 - NVD3 in vendor/assets/
 - Jquery-UI autocompleter in vendor/assets/
+
+Run "rake erd" to generate an erd diagram
+
+API
+-----------
+
+Listing candidates
+/api/candidates.json
+
+Listing campaign finance transactions for a candidate
+/api/candidates/113/campaign_finance_transactions.json
+
+In progress / unfinished
+- Api::Analytics::CampaignFinanceTransactionsController
 
 Ruby on Rails
 -------------
@@ -59,6 +78,13 @@ Getting Started
 - Install CatDoc (eg., via macports)
 - Install Ruby 2.1.2
 - run bundle install
+- set .env file with data eg.,
+  ADMIN_NAME=First User
+  ADMIN_EMAIL=user@example.com
+  ADMIN_PASSWORD=changeme
+  S3_BUCKET_NAME=
+  AWS_ACCESS_KEY_ID=
+  AWS_SECRET_ACCESS_KEY=
 
 
 Demo
