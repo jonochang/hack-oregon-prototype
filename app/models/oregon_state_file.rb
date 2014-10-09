@@ -176,7 +176,7 @@ private
     end
   end
 
-  def download_candidates from, to
+  def download_candidate_filings from, to
     from_date = case from
       when Date
         from
