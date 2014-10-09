@@ -351,7 +351,11 @@ private
       next if election_txt == 'Election Txt' || election_txt.to_s.strip.empty?
 
       begin
-        candidate = Candidate.find_or_create_by candidate_source_id: id_nbr
+        candidate = if id_nbr.present?
+                      Candidate.find_or_create_by candidate_source_id: id_nbr
+                    else
+                      Candidate.create!
+                    end
         candidate.update_attributes! party_affiliation: party_descr,
           major_party_indicator: major_party_ind,
           ballot_name: cand_ballot_name_txt,

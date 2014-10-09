@@ -3,7 +3,7 @@ class Candidate < ActiveRecord::Base
   has_many :committees
   has_many :campaign_finance_transactions, through: :committees
 
-  validates :candidate_source_id, presence: true, numericality: true
+  #validates :candidate_source_id, presence: true, numericality: true
 
   def stats_by_date from_date, to_date
     events_by_date = campaign_finance_transactions.group(:sub_type)
