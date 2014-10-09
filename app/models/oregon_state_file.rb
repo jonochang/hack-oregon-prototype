@@ -5,10 +5,16 @@ class OregonStateFile < ActiveRecord::Base
   has_attached_file :source_xls_file
   validates_attachment_content_type :source_xls_file, content_type: ["application/excel", "application/vnd.ms-excel", "application/xls", "CDF"]
 
-  has_attached_file :converted_csv_file
-  validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain', 'text/x-pascal']
+  has_attached_file :converted_csv_file,
+    s3_headers: lambda { |attachment|
+      { 
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=#{attachment.original_filename}",
+      }
+    }
+  validates_attachment_content_type :converted_csv_file, content_type: ["text/csv", 'text/plain', 'text/x-pascal', 'application/octet-stream']
 
-  enum data_type: [:transactions, :committees, :candidates]
+  enum data_type: [:transactions, :committees, :candidate_filings]
 
   def download
     case data_type
@@ -16,14 +22,14 @@ class OregonStateFile < ActiveRecord::Base
       download_transactions query['from_date'], query['to_date']
     when 'committees'
       download_committees query['starts_with_name']
-    when 'candidates'
-      download_candidates query['from_date'], query['to_date']
+    when 'candidate_filings'
+      download_candidate_filings query['from_date'], query['to_date']
     end
   end
 
   def convert_to_csv
     raise 'can not convert to csv without a source excel file' unless source_xls_file.exists?
-    file = Tempfile.new(['xls2csv-', '.csv'])
+    file = Tempfile.new(['xls2csv-', '.xls'])
     file.binmode
     begin
       file.write(open(source_xls_file_uripath) {|f| f.read })
@@ -54,6 +60,8 @@ class OregonStateFile < ActiveRecord::Base
       import_transactions!
     when 'committees'
       import_committees!
+    when 'candidate_filings'
+      import_candidate_filings!
     end
   end
 
@@ -324,5 +332,118 @@ private
         retry
       end
     end
+  end
+
+  def import_candidate_filings!
+    raise 'can not import without a converted csv file' unless converted_csv_file.exists?
+    CandidateFiling.where(oregon_state_file_id: self.id).delete_all
+
+    CSV.parse(open(converted_csv_file_uripath).read) do |row|
+      election_txt, election_year, office_group, id_nbr, office, candidate_office, candidate_file_rsn, file_mthd_ind, 
+      filetype_descr, party_descr, major_party_ind, cand_ballot_name_txt, occptn_txt, education_bckgrnd_txt, occptn_bkgrnd_txt, 
+      credentials, prev_govt_bkgrnd_txt, judge_incbnt_ind, qlf_ind, filed_date, file_fee_rfnd_date, witdrw_date, withdrw_resn_txt, 
+      pttn_file_date, pttn_sgnr_rqd_nbr, pttn_signr_filed_nbr, pttn_cmplt_date, ballot_order_nbr, prfx_name_cd, first_name, mdle_name, 
+      last_name, sufx_name, title_txt, mailing_addr_line_1, mailing_addr_line_2, mailing_city_name, mailing_st_cd, mailing_zip_code, mailing_zip_plus_four, 
+      residence_addr_line_1, residence_addr_line_2, residence_city_name, residence_st_cd, residence_zip_code, residence_zip_plus_four, home_phone, cell_phone, 
+      fax_phone, email, work_phone, web_address = row
+
+      next if election_txt == 'Election Txt' || election_txt.to_s.strip.empty?
+
+      begin
+        candidate = Candidate.find_or_create_by candidate_source_id: id_nbr
+        candidate.update_attributes! party_affiliation: party_descr,
+          major_party_indicator: major_party_ind,
+          ballot_name: cand_ballot_name_txt,
+          occupation: occptn_txt,
+          education_background: education_bckgrnd_txt,
+          occupation_background: occptn_bkgrnd_txt,
+          credentials: credentials,
+          previous_government_background: prev_govt_bkgrnd_txt,
+          prefix_name: prfx_name_cd,
+          first_name: first_name,
+          middle_name: mdle_name,
+          last_name: last_name,
+          suffix_name: sufx_name,
+          title: title_txt,
+          mailing_address_line_1: mailing_addr_line_1,
+          mailing_address_line_2: mailing_addr_line_2,
+          mailing_city: mailing_city_name,
+          mailing_state: mailing_st_cd,
+          mailing_zip_code: mailing_zip_code,
+          mailing_zip_plus_four: mailing_zip_plus_four,
+          residence_address_line_1: residence_addr_line_1,
+          residence_address_line_2: residence_addr_line_2,
+          residence_city: residence_city_name,
+          residence_state: residence_st_cd,
+          residence_zip_code: residence_zip_code,
+          residence_zip_plus_four: residence_zip_plus_four,
+          home_phone: home_phone,
+          cell_phone: cell_phone,
+          fax_phone: fax_phone,
+          email: email,
+          work_phone: work_phone,
+          web_address: web_address
+
+        candidate_filing = CandidateFiling.find_or_create_by candidate_filing_source_id: candidate_file_rsn
+        candidate_filing.update_attributes! oregon_state_file: self,
+          candidate: candidate,
+          election_title: election_txt,
+          election_year: election_year,
+          office_group: office_group,
+          candidate_source_id: id_nbr,
+          office: office,
+          candidate_office: candidate_office,
+          file_method_indicator: file_mthd_ind,
+          filetype_descr: filetype_descr,
+          party_affiliation: party_descr,
+          major_party_indicator: major_party_ind,
+          candidate_ballot_name: cand_ballot_name_txt,
+          candidate_occupation: occptn_txt,
+          candidate_education_background: education_bckgrnd_txt,
+          candidate_occupation_background: occptn_bkgrnd_txt,
+          candidate_credentials: credentials,
+          previous_government_background: prev_govt_bkgrnd_txt,
+          judge_incumbent_indicator: judge_incbnt_ind,
+          qlf_indicator: qlf_ind,
+          filed_date: parse_date(filed_date),
+          file_fee_refund_date: parse_date(file_fee_rfnd_date),
+          withdraw_date: parse_date(witdrw_date),
+          withdraw_reason: withdrw_resn_txt,
+          petition_file_date: parse_date(pttn_file_date),
+          petition_sgnr_rqd_number: pttn_sgnr_rqd_nbr,
+          petition_signatory_filed_number: pttn_signr_filed_nbr,
+          petition_completed_date: parse_date(pttn_cmplt_date),
+          ballot_order_number: ballot_order_nbr,
+          prefix_name: prfx_name_cd,
+          first_name: first_name,
+          middle_name: mdle_name,
+          last_name: last_name,
+          suffix_name: sufx_name,
+          title: title_txt,
+          mailing_address_line_1: mailing_addr_line_1,
+          mailing_address_line_2: mailing_addr_line_2,
+          mailing_city: mailing_city_name,
+          mailing_state: mailing_st_cd,
+          mailing_zip_code: mailing_zip_code,
+          mailing_zip_plus_four: mailing_zip_plus_four,
+          residence_address_line_1: residence_addr_line_1,
+          residence_address_line_2: residence_addr_line_2,
+          residence_city: residence_city_name,
+          residence_state: residence_st_cd,
+          residence_zip_code: residence_zip_code,
+          residence_zip_plus_four: residence_zip_plus_four,
+          home_phone: home_phone,
+          cell_phone: cell_phone,
+          fax_phone: fax_phone,
+          email: email,
+          work_phone: work_phone,
+          web_address: web_address
+          
+          
+      rescue ActiveRecord::RecordNotUnique
+        retry
+      end
+    end
+
   end
 end
