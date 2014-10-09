@@ -1,0 +1,111 @@
+h3 = @candidate.ballot_name
+h4 = @candidate.party_affiliation
+
+/h1 Listing hoof_sensor_readings
+/
+/h2 Search
+/= form_for(:hoof_sensor_reading, method: :get, url: hoof_sensor_readings_path, html: {role: 'form'}, defaults: {input_html: {class: "form-control"}}) do |f|
+/  .form-inputs
+/    label Batch
+/    = f.collection_select :batch_id, Batch.all, :id, :track, {include_blank: true, selected: params[:hoof_sensor_reading].try(:[], :batch_id)}
+/    = f.button :submit, class: 'btn btn-default'
+
+h4 State Summary
+
+svg.state_summary style='height:500px; width:690px;'
+
+javascript:
+
+  nv.addGraph(function() {
+    var data = #{@state_summary_for_chart.to_json.html_safe}
+    var chart = nv.models.discreteBarChart()
+      .x(function(d) { return d.label })    //Specify the data accessors.
+      .y(function(d) { return d.value })
+      .yDomain([0, #{@state_max_value}])
+      .showValues(true)
+      .valueFormat(d3.format('$,f'))
+      .margin({top: 30, right: 60, bottom: 50, left: 70})
+      .color(d3.scale.category10().range());
+
+    chart.yAxis.axisLabel("Amount")
+      .tickFormat(d3.format('$,f'));
+
+
+    d3.select('svg.state_summary')
+      .datum(data)
+      .transition().duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+
+h4 Transactions Type Summary
+
+svg.transaction_type style='height:500px; width:690px;'
+
+javascript:
+
+  nv.addGraph(function() {
+    var data = #{@transaction_type_summary_for_chart.to_json.html_safe}
+    var chart = nv.models.discreteBarChart()
+      .x(function(d) { return d.label })    //Specify the data accessors.
+      .y(function(d) { return d.value })
+      .yDomain([0, #{@transaction_type_max_value}])
+      .showValues(true)
+      .valueFormat(d3.format('$,f'))
+      .margin({top: 30, right: 60, bottom: 50, left: 70})
+      .color(d3.scale.category10().range());
+
+    chart.yAxis.axisLabel("Amount")
+      .tickFormat(d3.format('$,f'));
+
+
+    d3.select('svg.transaction_type')
+      .datum(data)
+      .transition().duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+table
+  tbody
+    tr
+      - @transaction_type_summary.sort.each do |type, amount|
+        td
+          = type
+        td
+          = number_to_currency amount
+
+h4 Campaign Finance Transactions
+table.table.table-bordered.table-hover
+  thead
+    tr
+      th Date
+      th Status
+      th Filer
+      th Contributor / Payee
+      th Type
+      th State
+      th Amount
+      th Aggregate Amount
+
+  tbody
+    - @candidate_transactions.each do |trans|
+      tr
+        td = trans.transaction_date
+        td = trans.transaction_status
+        td = trans.filer
+        td = trans.contributor_payee
+        td = trans.sub_type
+        td = trans.state
+        td = number_to_currency trans.amount
+        td = number_to_currency trans.aggregate_amount
+
+br
+

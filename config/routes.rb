@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   devise_for :users
   resources :users
 
+  get '/candidates' => 'candidates#index'
+  get '/candidates/:id' => 'candidates#show'
+
   namespace :api do
     get 'campaign_finance_transactions' => 'campaign_finance_transactions#index'
     get 'campaign_finance_transactions/:id' => 'campaign_finance_transactions#show'
