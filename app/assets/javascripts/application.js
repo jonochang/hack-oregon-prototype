@@ -16,4 +16,6 @@
 //= require bootstrap-sprockets
 //= require d3.v3.min
 //= require nv.d3
+//= require jquery-ui
+//= require autocomplete-rails
 //= require_tree .
