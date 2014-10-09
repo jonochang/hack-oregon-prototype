@@ -2,6 +2,7 @@ class CreateCommittees < ActiveRecord::Migration
   def change
     create_table :committees do |t|
       t.references :oregon_state_file
+      t.references :candidate
 
       t.integer :source_id
       t.string :committee_name
@@ -19,7 +20,7 @@ class CreateCommittees < ActiveRecord::Migration
       t.string :treasurer_fax
       t.string :candidate_first_name
       t.string :candidate_last_name
-      t.string :candidate_maling_address
+      t.string :candidate_mailing_address
       t.string :candidate_work_phone
       t.string :candidate_residence_phone
       t.string :candidate_fax
