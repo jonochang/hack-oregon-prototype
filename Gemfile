@@ -18,6 +18,7 @@ gem 'slim-rails'
 gem 'mechanize'
 gem 'paperclip'
 gem 'aws-sdk'
+gem 'rails4-autocomplete'
 
 gem 'activeadmin', github: 'activeadmin'
 group :development do
