@@ -25,4 +25,8 @@ class Candidate < ActiveRecord::Base
       )
     }
   end
+
+  def to_s
+    ballot_name
+  end
 end

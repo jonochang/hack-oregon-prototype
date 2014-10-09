@@ -4,3 +4,33 @@ h3 Search
 .search
   = form_tag do
     = autocomplete_field_tag 'ballot_name', '', candidates_autocomplete_candidate_ballot_name_path, :update_elements => {}
+
+h3 Top 10 Candidate transactions
+
+table.table.table-bordered.table-hover
+  thead
+    tr
+      th Candidate
+      th Date
+      th Status
+      th Filer
+      th Contributor / Payee
+      th Type
+      th State
+      th Amount
+      th Aggregate Amount
+
+  tbody
+    - @transactions.each do |trans|
+      tr
+        td = link_to trans.committee.candidate, candidate_path(trans.committee.candidate)
+        td = trans.transaction_date
+        td = trans.transaction_status
+        td = trans.filer
+        td = trans.contributor_payee
+        td = trans.sub_type
+        td = trans.state
+        td = number_to_currency trans.amount
+        td = number_to_currency trans.aggregate_amount
+
+br

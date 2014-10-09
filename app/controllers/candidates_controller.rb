@@ -2,7 +2,21 @@ class CandidatesController < ApplicationController
   autocomplete :candidate, :ballot_name
 
   def index
-    @candidates = Candidate.all
+    #@candidates = Candidate.all
+    records_array = ActiveRecord::Base.connection.execute "WITH amount_ranks AS (
+      SELECT c.id,
+             c.committee_id,
+             co.candidate_id,
+             c.filer,
+             c.contributor_payee,
+             c.sub_type,
+             c.amount,
+             ROW_NUMBER() OVER (ORDER BY c.amount DESC) AS amount_rank
+      FROM campaign_finance_transactions c LEFT OUTER JOIN committees co ON c.committee_id = co.id
+      WHERE co.candidate_id IS NOT NULL)
+    SELECT a.* from amount_ranks a
+    WHERE a.amount_rank <= 10"
+    @transactions = CampaignFinanceTransaction.where(id: records_array.map{|result| result['id']}).order('amount DESC')
   end
 
   def show
