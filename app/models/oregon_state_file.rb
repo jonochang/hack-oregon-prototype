@@ -304,8 +304,10 @@ private
       next if committee_id == 'Committee Id' || committee_id.to_s.strip.empty?
 
       begin
+        candidate = Candidate.where(email: candidate_email).first
         committee = Committee.find_or_create_by source_id: committee_id
         committee.update_attributes! oregon_state_file: self,
+          candidate: candidate,
           committee_name: committee_name,
           committee_type: committee_type,
           committee_subtype: committee_subtype,
@@ -321,7 +323,7 @@ private
           treasurer_fax: treasurer_fax,
           candidate_first_name: candidate_first_name,
           candidate_last_name: candidate_last_name,
-          candidate_maling_address: candidate_maling_address,
+          candidate_mailing_address: candidate_maling_address,
           candidate_work_phone: candidate_work_phone,
           candidate_residence_phone: candidate_residence_phone,
           candidate_fax: candidate_fax,
