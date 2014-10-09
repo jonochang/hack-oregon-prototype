@@ -19,3 +19,9 @@
 //= require jquery-ui
 //= require autocomplete-rails
 //= require_tree .
+
+$(function() {
+  $('.search #ballot_name').bind('railsAutocomplete.select', function(event, data){
+    window.location = '/candidates/' + data.item.id + '-' + data.item.label
+  })
+});

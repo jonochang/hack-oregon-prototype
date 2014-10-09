@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   devise_for :users
   resources :users
 
+  get '/candidates/autocomplete_candidate_ballot_name'
   get '/candidates' => 'candidates#index'
   get '/candidates/:id' => 'candidates#show'
 

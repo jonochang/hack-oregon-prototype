@@ -1,0 +1,6 @@
+h2 Candidates
+h3 Search
+
+.search
+  = form_tag do
+    = autocomplete_field_tag 'ballot_name', '', candidates_autocomplete_candidate_ballot_name_path, :update_elements => {}

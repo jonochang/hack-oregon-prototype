@@ -1,4 +1,5 @@
 class CandidatesController < ApplicationController
+  autocomplete :candidate, :ballot_name
 
   def index
     @candidates = Candidate.all
