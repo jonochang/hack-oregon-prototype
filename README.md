@@ -5,7 +5,7 @@ This application was inspired by my meeting with Sam Higgins and Melissa Lewis a
 
 Background
 -----------
-Oregon's [Secretary of State website](http://sos.oregon.gov/Pages/default.aspx) allows you to [search](https://secure.sos.state.or.us/orestar/gotoPublicTransactionSearch.do) for the follwing data:
+Oregon's [Secretary of State website](http://sos.oregon.gov/Pages/default.aspx) allows you to [search](https://secure.sos.state.or.us/orestar/gotoPublicTransactionSearch.do) for the following data:
 - Candidates
 - Committees
 - Campaign Finance Transactions
@@ -36,9 +36,9 @@ Once the XLS spreadsheets are downloaded, I also tried multiple approaches to im
 For some of the XLS files, both the spreadsheet and roo gems would run at 100% ruby cpu usage for more than 10 minutes before I decided to give up on it. Other times it would return an empty array of data. I could not compile gnumeric via MacPorts, so I gave up on that too. I'm using xls2csv from CatDoc, which works well, and I've compiled and committed a binary for deploying to Heroku in /.heroku/
 
 There's a list of rake tasks under the data namespace to help you import data. eg.,
-foreman run rake data:process_candidate_filings_for[2013,2014]
-foreman run rake data:process_committees_for[A,Z]
-foreman run rake data:process_transactions_for[2014-09-01,2014-10-03]
+- foreman run rake data:process_candidate_filings_for[2013,2014]
+- foreman run rake data:process_committees_for[A,Z]
+- foreman run rake data:process_transactions_for[2014-09-01,2014-10-03]
 
 Architecture
 -----------
@@ -55,10 +55,10 @@ API
 -----------
 
 Listing candidates
-/api/candidates.json
+- /api/candidates.json
 
 Listing campaign finance transactions for a candidate
-/api/candidates/113/campaign_finance_transactions.json
+- /api/candidates/113/campaign_finance_transactions.json
 
 In progress / unfinished
 - Api::Analytics::CampaignFinanceTransactionsController
@@ -79,18 +79,18 @@ Getting Started
 - Install Ruby 2.1.2
 - run bundle install
 - set .env file with data eg.,
-  ADMIN_NAME=First User
-  ADMIN_EMAIL=user@example.com
-  ADMIN_PASSWORD=changeme
-  S3_BUCKET_NAME=
-  AWS_ACCESS_KEY_ID=
-  AWS_SECRET_ACCESS_KEY=
+  - ADMIN_NAME=First User
+  - ADMIN_EMAIL=user@example.com
+  - ADMIN_PASSWORD=changeme
+  - S3_BUCKET_NAME=
+  - AWS_ACCESS_KEY_ID=
+  - AWS_SECRET_ACCESS_KEY=
 
 
 Demo
 ----------------
 
-You can see an example on Heroku here: [hack-oregon-prototype.herokuapp.com](hack-oregon-prototype.herokuapp.com). Data has been imported for transactions between 2014-Jun-01 till 2014-Oct-03. Try searching for a candidate eg., Jennifer Williamson, or click on one of the candidates with top 10 amounts.
+You can see an example on Heroku here: [hack-oregon-prototype.herokuapp.com](hack-oregon-prototype.herokuapp.com). Data has been imported for transactions between 2014-Jun-01 till 2014-Oct-03. Try searching using the autocompleter for a candidate eg., Jennifer Williamson, or click on one of the candidates with top 10 amounts.
 
 
 Similar Projects
