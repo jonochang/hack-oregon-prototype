@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141006073255) do
+ActiveRecord::Schema.define(version: 20141008053252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -134,8 +134,114 @@ ActiveRecord::Schema.define(version: 20141006073255) do
   add_index "campaign_finance_transactions", ["transaction_date"], name: "index_campaign_finance_transactions_on_transaction_date", using: :btree
   add_index "campaign_finance_transactions", ["transaction_type_id"], name: "index_campaign_finance_transactions_on_transaction_type_id", using: :btree
 
+  create_table "candidate_filings", force: true do |t|
+    t.integer  "candidate_id"
+    t.integer  "oregon_state_file_id"
+    t.string   "election_title"
+    t.integer  "election_year"
+    t.string   "office_group"
+    t.integer  "candidate_source_id"
+    t.string   "office"
+    t.string   "candidate_office"
+    t.integer  "candidate_filing_source_id"
+    t.string   "file_method_indicator"
+    t.string   "filetype_descr"
+    t.string   "party_affiliation"
+    t.string   "major_party_indicator"
+    t.string   "candidate_ballot_name"
+    t.text     "candidate_occupation"
+    t.text     "candidate_education_background"
+    t.text     "candidate_occupation_background"
+    t.text     "candidate_credentials"
+    t.text     "previous_government_background"
+    t.string   "judge_incumbent_indicator"
+    t.string   "qlf_indicator"
+    t.date     "filed_date"
+    t.date     "file_fee_refund_date"
+    t.date     "withdraw_date"
+    t.string   "withdraw_reason"
+    t.date     "petition_file_date"
+    t.string   "petition_sgnr_rqd_number"
+    t.string   "petition_signatory_filed_number"
+    t.date     "petition_completed_date"
+    t.integer  "ballot_order_number"
+    t.string   "prefix_name"
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.string   "last_name"
+    t.string   "suffix_name"
+    t.string   "title"
+    t.string   "mailing_address_line_1"
+    t.string   "mailing_address_line_2"
+    t.string   "mailing_city"
+    t.string   "mailing_state"
+    t.string   "mailing_zip_code"
+    t.string   "mailing_zip_plus_four"
+    t.string   "residence_address_line_1"
+    t.string   "residence_address_line_2"
+    t.string   "residence_city"
+    t.string   "residence_state"
+    t.string   "residence_zip_code"
+    t.string   "residence_zip_plus_four"
+    t.string   "home_phone"
+    t.string   "cell_phone"
+    t.string   "fax_phone"
+    t.string   "email"
+    t.string   "work_phone"
+    t.string   "web_address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "candidate_filings", ["candidate_filing_source_id"], name: "index_candidate_filings_on_candidate_filing_source_id", unique: true, using: :btree
+  add_index "candidate_filings", ["candidate_id"], name: "index_candidate_filings_on_candidate_id", using: :btree
+  add_index "candidate_filings", ["oregon_state_file_id"], name: "index_candidate_filings_on_oregon_state_file_id", using: :btree
+
+  create_table "candidates", force: true do |t|
+    t.integer  "candidate_source_id"
+    t.string   "party_affiliation"
+    t.string   "major_party_indicator"
+    t.string   "ballot_name"
+    t.text     "occupation"
+    t.text     "education_background"
+    t.text     "occupation_background"
+    t.text     "credentials"
+    t.text     "previous_government_background"
+    t.string   "prefix_name"
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.string   "last_name"
+    t.string   "suffix_name"
+    t.string   "title"
+    t.string   "mailing_address_line_1"
+    t.string   "mailing_address_line_2"
+    t.string   "mailing_city"
+    t.string   "mailing_state"
+    t.string   "mailing_zip_code"
+    t.string   "mailing_zip_plus_four"
+    t.string   "residence_address_line_1"
+    t.string   "residence_address_line_2"
+    t.string   "residence_city"
+    t.string   "residence_state"
+    t.string   "residence_zip_code"
+    t.string   "residence_zip_plus_four"
+    t.string   "home_phone"
+    t.string   "cell_phone"
+    t.string   "fax_phone"
+    t.string   "email"
+    t.string   "work_phone"
+    t.string   "web_address"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "candidates", ["candidate_source_id"], name: "index_candidates_on_candidate_source_id", unique: true, using: :btree
+  add_index "candidates", ["cell_phone"], name: "index_candidates_on_cell_phone", using: :btree
+  add_index "candidates", ["email"], name: "index_candidates_on_email", using: :btree
+
   create_table "committees", force: true do |t|
     t.integer  "oregon_state_file_id"
+    t.integer  "candidate_id"
     t.integer  "source_id"
     t.string   "committee_name"
     t.string   "committee_type"
@@ -152,7 +258,7 @@ ActiveRecord::Schema.define(version: 20141006073255) do
     t.string   "treasurer_fax"
     t.string   "candidate_first_name"
     t.string   "candidate_last_name"
-    t.string   "candidate_maling_address"
+    t.string   "candidate_mailing_address"
     t.string   "candidate_work_phone"
     t.string   "candidate_residence_phone"
     t.string   "candidate_fax"
