@@ -1,9 +1,29 @@
 h2 Candidates
-h3 Search
+h3 Search by Name
 
 .search
-  = form_tag do
+  = form_tag('/', method: :get) do
     = autocomplete_field_tag 'ballot_name', '', candidates_autocomplete_candidate_ballot_name_path, :update_elements => {}
+
+
+- if @candidates
+  h3 Results
+  table.table.table-bordered.table-hover
+    thead
+      tr
+        th Name
+        th Party
+        th Election
+        th Received Contributions
+
+    tbody
+      - @candidates.each do |candidate|
+        tr
+          td = link_to candidate, candidate_path(candidate)
+          td = candidate.party_affiliation
+          td = candidate.candidate_filings.order("filed_date DESC").first.election_title
+          td = number_to_currency candidate.campaign_finance_transactions.where(sub_type: 'Cash Contribution').sum(:amount)
+  br
 
 h3 Top 10 Candidate transactions
 

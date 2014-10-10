@@ -17,6 +17,11 @@ class CandidatesController < ApplicationController
     SELECT a.* from amount_ranks a
     WHERE a.amount_rank <= 10"
     @transactions = CampaignFinanceTransaction.where(id: records_array.map{|result| result['id']}).order('amount DESC')
+    @candidates = if params[:ballot_name].present?
+                    Candidate.where("ballot_name LIKE ?", "%#{params[:ballot_name]}%")
+                  else
+                    nil
+                  end
   end
 
   def show
