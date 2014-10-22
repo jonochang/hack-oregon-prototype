@@ -92,7 +92,7 @@ Getting Started
 Demo
 ----------------
 
-You can see an example on Heroku here: [hack-oregon-prototype.herokuapp.com](hack-oregon-prototype.herokuapp.com). Data has been imported for transactions between 2014-Jun-01 till 2014-Oct-03. Try searching using the autocompleter for a candidate eg., Jennifer Williamson, or click on one of the candidates with top 10 amounts.
+You can see an example on Heroku here: [hack-oregon-prototype.herokuapp.com](http://hack-oregon-prototype.herokuapp.com). Data has been imported for transactions between 2014-Jun-01 till 2014-Oct-03. Try searching using the autocompleter for a candidate eg., Jennifer Williamson, or click on one of the candidates with top 10 amounts.
 
 
 Similar Projects
